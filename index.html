@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>RPS Multiplayer</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Rock Paper Scissors</h1>
+        <div>
+            <button id="log-out-btn" class="btn">Log out</button>
+        </div>
+    </header>
+    <div id="sign-in" class="sign-in">
+        <h3>Sign in</h3>
+        <div id="username-input-div">
+            <label for="">Username</label>
+            <input id="username" type="text" name="username" placeholder="Username" class="form-input">
+        </div>
+        <div id="password-input-div">
+            <label for="">Password</label>
+            <input id="password" type="text" name="password" placeholder="Password" class="form-input">        
+        </div>
+        <button id="sign-in-btn" class="btn">Sign in</button>
+        <span> or </span>
+        <a id="create-new-acc-link" href="javascript:;">Create a new account</a>
+    </div>
+    <div id="create-new-acc" class="create-new-acc">
+        <h3>Create a new account</h3>
+        <form action="" id="new-acc">
+            <div>
+                <label for="">Username</label>
+                <input id="new-username" type="text" name="username" placeholder="Username" class="form-input">
+            </div>
+            <div>
+                <label for="">Password</label>
+                <input id="new-password" type="text" name="password" placeholder="Password" class="form-input">
+            </div>
+            <div>
+                <label for="">Confirm Password</label>
+                <input id="confirm-new-password" type="text" name="confirm-password" placeholder="Re-enter Password" class="form-input">       
+            </div>
+            <button id="create-new-acc-btn" class="btn">Submit</button>
+            <span> or </span>
+            <a id="sign-in-link" href="javascript:;">Sign in</a>
+        </form>
+    </div>
+    <button id="search-btn" class="btn">Search other player</button>
+    <div id="result" class="result"></div>
+    <div class="container">
+        <div class="user-container">
+            <div class="user1-conatiner">
+                <h3 id="user1-name">name1</h3>
+                <div class="selection">
+                    <a id="rock" class="rps-selection" href="javascript:;">Rock</a>
+                    <a id="paper" class="rps-selection" href="javascript:;">Paper</a>
+                    <a id="scissors" class="rps-selection" href="javascript:;">Scissors</a>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
+    <script src="assets/javascript/app.js"></script>
+</body>
+</html>
