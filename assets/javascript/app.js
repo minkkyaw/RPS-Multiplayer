@@ -16,6 +16,8 @@ let newPasswordInput = document.getElementById('new-password');
 let confirmPasswordInput = document.getElementById('confirm-new-password');
 let searchBtn = document.getElementById('search-btn');
 let logOutBtn = document.getElementById('log-out-btn');
+let player1name = document.getElementById('user1-name');
+let player2name = document.getElementById('user2-name');
 let username;
 let searching = false;
 let online = false;
@@ -60,55 +62,76 @@ function newAccount() {
     }
 }
 
-function gettingData(usernameArr, passwordArr) {
-    let numberOfUser;
-    database.ref('/userdata').on("value", (snapshot) => {
-        numberOfUser = Object.keys(snapshot.val()).length;
-        console.log(numberOfUser);
-    });
-    database.ref('/userdata').on("child_added", (snapshot) => {
-        let {username, password} = snapshot.val();   
-        usernameArr.push(username);
-        passwordArr.push(password);
-    });
-}
-
 function signInValidation(usernameArr, passwordArr) {
     let signInUsername = usernameInput.value;
-    if(usernameArr.includes(signInUsername)) {
-        let index = usernameArr.indexOf(signInUsername);
-        if(passwordInput.value = passwordArr[index]){
-            username = signInUsername;
-            online = true;
-            database.ref('/gamechannel/'+username).set({
-                online,
-                searching
-            });
-            document.getElementById('invalid-text').remove();
-        } else {
-            let passwordInvalid = document.createElement('p');
-            passwordInvalid.textContent = 'The password is invalid';
-            passwordInvalid.style.color = 'red';
-            passwordInvalid.id = 'invalid-text';
-            passwordInputDiv.appendChild(passwordInvalid);
-        };
-    } else {
-        let usernameInvalid = document.createElement('p');
-        usernameInvalid.textContent = 'The username is invalid';
-        usernameInvalid.style.color = 'red';
-        usernameInvalid.id = 'invalid-text';
-        usernameInputDiv.appendChild(usernameInvalid);
-    };
-    console.log(usernameArr);
-    usernameArr = [];
-    console.log(usernameArr);
-    passwordArr = [];
+    database.ref('/userdata').on("child_added", (snapshot) => {
+        if(signInUsername === snapshot.val().username) {
+            if(passwordInput.value === snapshot.val().password) {
+                username = signInUsername;
+                online = true;
+                database.ref('/gamechannel/'+username).set({
+                    online,
+                    searching
+                });
+            
+            document.getElementById('player1-name').textContent = username;
+            let rockLink = document.createElement('a');
+            rockLink.textContent = "Rock";
+            rockLink.className = 'rps-selection';
+            rockLink.id = 'rock';
+            rockLink.setAttribute('href', 'javascript:;');
+
+            let paperLink = document.createElement('a');
+            paperLink.textContent = "Paper";
+            paperLink.className = 'rps-selection';
+            paperLink.id = 'paper';
+            paperLink.setAttribute('href', 'javascript:;');
+
+            let scissorsLink = document.createElement('a');
+            scissorsLink.textContent = "Scissors";
+            scissorsLink.className = 'rps-selection';
+            scissorsLink.id = 'scissors';
+            scissorsLink.setAttribute('href', 'javascript:;');
+
+            let newDiv = document.getElementById('selection');
+            newDiv.appendChild(rockLink);
+            newDiv.appendChild(paperLink);
+            newDiv.appendChild(scissorsLink);
+            }
+            let selection = document.querySelectorAll('.rps-selection');
+            selection.forEach(select => select.addEventListener('click', function() {
+                database.ref('/gamechannel/'+username).set({
+                    online,
+                    searching,
+                    pick: this.id
+                });
+                document.getElementById('player1-pick').textContent = this.id;
+            }));
+        }
+    });
+    // if(usernameArr.includes(signInUsername)) {
+    //     let index = usernameArr.indexOf(signInUsername);
+    //     if(passwordInput.value = passwordArr[index]){
+    //         
+    //         player1name.textContent = username;
+    //     } else {
+    //         let passwordInvalid = document.createElement('p');
+    //         passwordInvalid.textContent = 'The password is invalid';
+    //         passwordInvalid.style.color = 'red';
+    //         passwordInvalid.id = 'invalid-text';
+    //         passwordInputDiv.appendChild(passwordInvalid);
+    //     };
+    // } else {
+    //     let usernameInvalid = document.createElement('p');
+    //     usernameInvalid.textContent = 'The username is invalid';
+    //     usernameInvalid.style.color = 'red';
+    //     usernameInvalid.id = 'invalid-text';
+    //     usernameInputDiv.appendChild(usernameInvalid);
+    // };
 }
 
 function signIn() {
-    gettingData(usernameArr, passwordArr);
-    signInValidation(usernameArr, passwordArr);
-    // showUser1Div();
+    signInValidation();
 }
 
 function logOut() {
@@ -130,7 +153,6 @@ function searchingOtherPlayer(username) {
 }
 
 function findingUser2(onlinePlayers) {
-    console.log(username);
     if(onlinePlayers.filter(name => name !== username).length !== 0){
         user2name = onlinePlayers.filter(name => name !== username)[0];
         console.log("user2name",user2name);
@@ -188,40 +210,49 @@ searchBtn.addEventListener('click',() => {
 function resultFunc(result) {
     switch(result) {
         case 'win':
-            console.log('You win!!!');
+            document.getElementById('result').textContent = 'You Win';
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching
             });
             break;
         case 'draw':
-            console.log('It is a draw!!!');
+            document.getElementById('result').textContent = 'You draw';
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching
             });
             break;
         case 'lost':
-            console.log('You lost!!!');
+            document.getElementById('result').textContent = 'You Lost';
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching
             });
             break;                        
     }
-    database.ref('/gamechannel/' + username).set({
-        online,
-        searching,
-        pick: ''
-    })
-    
+
+    setTimeout(function() {
+        document.getElementById('result').textContent = '';
+        database.ref('/gamechannel/' + username).set({
+            online,
+            searching,
+            pick: ''
+        });
+        document.getElementById('player1-pick').textContent = '';
+        document.getElementById('player2-pick').textContent = '';
+    },5000);
 }
 
 database.ref('/gamechannel/').on("value", (snapshot) => {
     if(user2name && snapshot.val()[user2name].hasOwnProperty("pick") && snapshot.val()[username].hasOwnProperty("pick")){
         let pick1 = snapshot.val()[username].pick;
         let pick2 = snapshot.val()[user2name].pick;
-        console.log(pick1, pick2)
+        if(pick1 && pick2) {
+            document.getElementById('player1-pick').textContent = pick1;
+            document.getElementById('player2-pick').textContent = pick2;
+        }
+        
         if(pick1 === 'rock') {
             switch(pick2) {
                 case 'rock':
@@ -264,14 +295,7 @@ database.ref('/gamechannel/').on("value", (snapshot) => {
 });
 
 logOutBtn.addEventListener('click',logOut);
-let selection = document.querySelectorAll('.rps-selection');
-selection.forEach(select => select.addEventListener('click', function() {
-    database.ref('/gamechannel/'+username).set({
-        online,
-        searching,
-        pick: this.id
-    });;
-}));
+
 
 
 
