@@ -24,7 +24,7 @@
         </div>
         <div id="password-input-div">
             <label for="">Password</label>
-            <input id="password" type="text" name="password" placeholder="Password" class="form-input">        
+            <input id="password" type="password" name="password" placeholder="Password" class="form-input">        
         </div>
         <button id="sign-in-btn" class="btn">Sign in</button>
         <span> or </span>
@@ -51,26 +51,44 @@
             <a id="sign-in-link" href="javascript:;">Sign in</a>
         </form>
     </div>
-    <button id="search-btn" class="btn">Search other player</button>
-    <div class="result">
-        <p id="result"> </p>
+    <div class="user-container">
+        <h2 id="user1-name"></h2>
+        <hr>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Win Percentage</th>
+                    <th>Draw Percentage</th>
+                    <th>Lost Percentage</th>
+                </tr>
+                <tr>
+                    <td id="player1-win-percentage"></td>
+                    <td id="player1-draw-percentage"></td>
+                    <td id="player1-lost-percentage"></td> 
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="container">
-        <div class="user-container">
-            <div id="user1-container">
+    <button id="search-btn" class="search-btn">Search other player</button>
+    <div class="result">
+        <div class="result-container">
+            <div class="player1-container">
                 <h3 id="player1-name"></h3>
                 <div id="selection" class="selection">
+                    <a id="rock" class="rps-selection" href="javascript:;">Rock</a>
+                    <a id="paper" class="rps-selection" href="javascript:;">Paper</a>
+                    <a id="scissors" class="rps-selection" href="javascript:;">Scissors</a>
                 </div>
-                <p id="player1-pick"></p>
+                <h4 id="player1-pick"></h4>
             </div>
-        </div>
-        <div class="user-container">
-            <div id="user2-container">
+            <div class="result">
+                <h1 id="result"></h1>
+            </div>
+            <div class="player2-container">
                 <h3 id="player2-name"></h3>
-                <p id="player2-pick"></p>
+                <h4 id="player2-pick"></h4>
             </div>
         </div>
-        
     </div>
     <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>

@@ -36,6 +36,10 @@ body {
     height: 20px;
 }
 
+table {
+    width: 100%;
+}
+
 .form-input {
     font-size: 1rem;
     padding: 5px;
@@ -65,9 +69,54 @@ body {
 }
 
 .user-container {
+    display: none;
     width: 50%;
     margin: 0 auto;
     text-align: center;
+}
+
+.result-container {
+    display: flex;
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.result {
+    display: none;
+    width: 320px;
+}
+
+.player1-container {
+    width: 230px;
+    height: 200px;
+}
+
+.player2-container {
+    width: 230px;
+    height: 200px;
+}
+
+#player1-pick {
+    display: none;
+    height: 150px;
+}
+
+#player2-pick {
+    display: none;
+    height: 150px;
+}
+
+#player1-name {
+    padding: 11px 0;
+    color: #fff;
+    background: rgb(2, 2, 2);
+}
+
+#player2-name {
+    padding: 11px 0;
+    color: #fff;
+    background: rgb(2, 2, 2);
 }
 
 .selection {
@@ -75,14 +124,17 @@ body {
     flex-direction: column;
 }
 
-.result {
-    display: none;
-    height: 60px;
+
+
+.rps-selection {
+    padding: 17px;
+    background: rgb(137, 137, 196);
 }
 
-.user-container {
-    display: none;
+.rps-selection:nth-child(even) {
+    background: red;
 }
+
 
 .btn {
     font-size: inherit;
@@ -92,3 +144,11 @@ body {
     border-radius: 5px;
 }
 
+.search-btn {
+    font-size: inherit;
+    font-family: inherit;
+    padding: 5px 10px;
+    background: #fff;
+    border-radius: 5px;
+    margin: 20px auto;
+}
