@@ -14,6 +14,7 @@ body {
     display: flex;
     justify-items: flex-end;
     padding: 10px;
+    border-bottom: 1px solid red;
 }
 
 .header h1 {
@@ -29,6 +30,10 @@ body {
 .sign-in {
     width: 300px;
     margin: 0 auto;
+}
+
+.height-20 {
+    height: 20px;
 }
 
 .form-input {
@@ -51,6 +56,10 @@ body {
     margin: 0 auto;
 }
 
+#search-btn {
+    display: none;
+}
+
 .container {
     display: flex;
 }
@@ -64,6 +73,15 @@ body {
 .selection {
     display: flex;
     flex-direction: column;
+}
+
+.result {
+    display: none;
+    height: 60px;
+}
+
+.user-container {
+    display: none;
 }
 
 .btn {

@@ -20,11 +20,13 @@ let player1name = document.getElementById('user1-name');
 let player2name = document.getElementById('user2-name');
 let username;
 let searching = false;
-let online = false;
+let online;
 let onlinePlayers = [];
 let user2name;
-let usernameArr = [];
-let passwordArr = [];
+let winCount = 0;
+let drawCount = 0;
+let lostCount = 0;
+let totalCount = 0;
 
 
 // Your web app's Firebase configuration
@@ -47,33 +49,54 @@ function newAccount() {
     let newUsername = newUsernameInput.value;
     let newPassword = newPasswordInput.value;
     let confirmPassword = confirmPasswordInput.value;
+    let invalidText = document.getElementById('new-acc-invalid-text');
     if(newPassword === confirmPassword) {
         database.ref('/userdata').push({
             username: newUsername,
             password: newPassword
         });
-        document.getElementById('invalid-text').remove();
+        database.ref('/gamechannel/'+newUsername).set({
+            online: false,
+            searching: false,
+            totalCount: 0,
+            winCount: 0,
+            lostCount: 0
+        });
+        invalidText.textContent = '';
     } else {
-        let invalidText = document.createElement('p');
         invalidText.textContent = 'The passwords are not the same. Please type again.';
         invalidText.style.color = 'red';
-        invalidText.id = 'invalid-text';
-        document.getElementById('new-acc').append(invalidText);
     }
 }
 
-function signInValidation(usernameArr, passwordArr) {
+function signInValidation() {
     let signInUsername = usernameInput.value;
+    let invalidText = document.getElementById('sign-in-invalid-text');
     database.ref('/userdata').on("child_added", (snapshot) => {
         if(signInUsername === snapshot.val().username) {
             if(passwordInput.value === snapshot.val().password) {
                 username = signInUsername;
                 online = true;
-                database.ref('/gamechannel/'+username).set({
-                    online,
-                    searching
+                invalidText.textContent = '';
+                database.ref('/gamechannel/'+username).on("value", function(snapshot) {
+                    if(snapshot.val().hasOwnProperty("drawCount")) {
+                        winCount = snapshot.val().winCount;
+                        drawCount = snapshot.val().drawCount;
+                        lostCount = snapshot.val().lostCount;
+                        totalCount = snapshot.val().totalCount;
+                    }
                 });
-            
+                setTimeout(function() {
+                    database.ref('/gamechannel/'+username).set({
+                        online,
+                        searching,
+                        totalCount,
+                        winCount,
+                        drawCount,
+                        lostCount
+                    });
+                    searchBtn.style.display = 'block';
+                },2000);
             document.getElementById('player1-name').textContent = username;
             let rockLink = document.createElement('a');
             rockLink.textContent = "Rock";
@@ -97,37 +120,31 @@ function signInValidation(usernameArr, passwordArr) {
             newDiv.appendChild(rockLink);
             newDiv.appendChild(paperLink);
             newDiv.appendChild(scissorsLink);
-            }
             let selection = document.querySelectorAll('.rps-selection');
             selection.forEach(select => select.addEventListener('click', function() {
                 database.ref('/gamechannel/'+username).set({
                     online,
                     searching,
-                    pick: this.id
+                    pick: this.id,
+                    totalCount,
+                    winCount,
+                    lostCount,
+                    drawCount
                 });
                 document.getElementById('player1-pick').textContent = this.id;
             }));
-        }
+            } else {
+                invalidText.textContent = 'The password is invalid';
+                invalidText.style.color = 'red';
+            };
+            
+        } else {
+                invalidText.textContent = 'The username is invalid';
+                invalidText.style.color = 'red';
+        };
+        
+        
     });
-    // if(usernameArr.includes(signInUsername)) {
-    //     let index = usernameArr.indexOf(signInUsername);
-    //     if(passwordInput.value = passwordArr[index]){
-    //         
-    //         player1name.textContent = username;
-    //     } else {
-    //         let passwordInvalid = document.createElement('p');
-    //         passwordInvalid.textContent = 'The password is invalid';
-    //         passwordInvalid.style.color = 'red';
-    //         passwordInvalid.id = 'invalid-text';
-    //         passwordInputDiv.appendChild(passwordInvalid);
-    //     };
-    // } else {
-    //     let usernameInvalid = document.createElement('p');
-    //     usernameInvalid.textContent = 'The username is invalid';
-    //     usernameInvalid.style.color = 'red';
-    //     usernameInvalid.id = 'invalid-text';
-    //     usernameInputDiv.appendChild(usernameInvalid);
-    // };
 }
 
 function signIn() {
@@ -140,16 +157,32 @@ function logOut() {
     console.log(username, password);
     database.ref('/gamechannel/'+username).set({
         searching,
-        online
+        online,
+        totalCount,
+        winCount,
+        lostCount,
+        drawCount
     });
+    document.getElementsByClassName('sign-in').forEach(element => element.style.display = "block");
+    document.getElementsByClassName('result').forEach(element => element.style.display = "none");
+    document.getElementsByClassName('user-container').forEach(element => element.style.display = "none");
 }
 
 function searchingOtherPlayer(username) {
     searching = true;
     database.ref('/gamechannel/'+username).set({
         online,
-        searching
+        searching,
+        totalCount,
+        winCount,
+        lostCount,
+        drawCount
     });
+    document.querySelectorAll('.sign-in').forEach(element => element.style.display = "none");
+    document.querySelectorAll('.sign-in').forEach(element => element.style.display = "none");
+    document.querySelectorAll('.result').forEach(element => element.style.display = "block");
+    document.querySelectorAll('.user-container').forEach(element => element.style.display = "block");
+
 }
 
 function findingUser2(onlinePlayers) {
@@ -160,7 +193,11 @@ function findingUser2(onlinePlayers) {
         searching = false;
         database.ref('/gamechannel/'+username).set({
             online,
-            searching
+            searching,
+            totalCount,
+            winCount,
+            lostCount,
+            drawCount
         });
     } else {
         document.getElementById('player2-name').textContent = 'Waiting for other players';
@@ -168,42 +205,7 @@ function findingUser2(onlinePlayers) {
 }
 
 
-signInBtn.addEventListener("click", function(e) {
-    e.preventDefault();
-    signIn();
 
-});
-
-createNewAccountBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    newAccount();
-});
-
-signInLink.addEventListener("click", function(e) {
-    e.preventDefault();
-    createnewAccountDiv.style.display = "none";
-    signInDiv.style.display = "block";
-});
-
-createNewAccountLink.addEventListener('click', function(e) {
-    e.preventDefault();
-    signInDiv.style.display = "none";
-    createnewAccountDiv.style.display = "block";
-});
-
-searchBtn.addEventListener('click',() => {
-    searchingOtherPlayer(username);
-    database.ref('/gamechannel/').on("value", (snapshot) => {
-        for(var key in snapshot.val()) {
-            console.log(key, snapshot.val()[key].searching);
-            if(snapshot.val()[key].searching === true && !onlinePlayers.includes(key)) {
-                onlinePlayers.push(key);
-                console.log(onlinePlayers);
-                findingUser2(onlinePlayers);
-            };
-        } ;
-    });
-});
 
 
 
@@ -211,23 +213,41 @@ function resultFunc(result) {
     switch(result) {
         case 'win':
             document.getElementById('result').textContent = 'You Win';
+            winCount++;
+            totalCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
-                searching
+                searching,
+                totalCount,
+                winCount,
+                lostCount,
+                drawCount
             });
             break;
         case 'draw':
             document.getElementById('result').textContent = 'You draw';
+            drawCount++;
+            totalCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
-                searching
+                searching,
+                totalCount,
+                winCount,
+                lostCount,
+                drawCount
             });
             break;
         case 'lost':
             document.getElementById('result').textContent = 'You Lost';
+            lostCount++;
+            totalCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
-                searching
+                searching,
+                totalCount,
+                winCount,
+                lostCount,
+                drawCount
             });
             break;                        
     }
@@ -237,8 +257,12 @@ function resultFunc(result) {
         database.ref('/gamechannel/' + username).set({
             online,
             searching,
-            pick: ''
-        });
+            pick: '',
+            totalCount,
+            winCount,
+            lostCount,
+            drawCount
+    });
         document.getElementById('player1-pick').textContent = '';
         document.getElementById('player2-pick').textContent = '';
     },5000);
@@ -292,6 +316,43 @@ database.ref('/gamechannel/').on("value", (snapshot) => {
         }
     }
     
+});
+
+signInBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    signIn();
+
+});
+
+createNewAccountBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    newAccount();
+});
+
+signInLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    createnewAccountDiv.style.display = "none";
+    signInDiv.style.display = "block";
+});
+
+createNewAccountLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    signInDiv.style.display = "none";
+    createnewAccountDiv.style.display = "block";
+});
+
+searchBtn.addEventListener('click',() => {
+    searchingOtherPlayer(username);
+    database.ref('/gamechannel/').on("value", (snapshot) => {
+        for(var key in snapshot.val()) {
+            // console.log(key, snapshot.val()[key].searching);
+            if(snapshot.val()[key].searching === true && !onlinePlayers.includes(key)) {
+                onlinePlayers.push(key);
+                // console.log(onlinePlayers);
+                findingUser2(onlinePlayers);
+            };
+        } ;
+    });
 });
 
 logOutBtn.addEventListener('click',logOut);
