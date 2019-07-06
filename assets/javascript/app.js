@@ -22,6 +22,9 @@ let pick1H4 = document.getElementById('player1-pick');
 let pick2H4 = document.getElementById('player2-pick');
 let signInInvalidText = document.getElementById('sign-in-invalid-text');
 let newAccInvalidText = document.getElementById('new-acc-invalid-text');
+let currentWinData = document.getElementById('current-win-data');
+let currentDrawData = document.getElementById('current-draw-data');
+let currentLostData = document.getElementById('current-lost-data');
 let username;
 let searching = false;
 let online;
@@ -31,6 +34,9 @@ let winCount = 0;
 let drawCount = 0;
 let lostCount = 0;
 let totalCount = 0;
+let currentWinCount = 0;
+let currentDrawCount = 0;
+let currentLostCount = 0;
 
 
 // Your web app's Firebase configuration
@@ -53,23 +59,35 @@ function newAccount() {
     let newUsername = newUsernameInput.value;
     let newPassword = newPasswordInput.value;
     let confirmPassword = confirmPasswordInput.value;
-    let invalidText = document.getElementById('new-acc-invalid-text');
-    if(newPassword === confirmPassword) {
-        database.ref('/userdata').push({
-            username: newUsername,
-            password: newPassword
-        });
-        database.ref('/gamechannel/'+newUsername).set({
-            online: false,
-            searching: false,
-            totalCount: 0,
-            winCount: 0,
-            lostCount: 0
-        });
-    } else {
-        newAccInvalidText.textContent = 'The passwords are not the same. Please type again.';
-        newAccInvalidText.style.color = 'red';
-    }
+    let signedInUsernames = [];
+    database.ref('/userdata').on('child_added', (snapshot) => {
+        signedInUsernames.push(snapshot.val().username);
+    });
+    setTimeout(function() {
+        if(newPassword === confirmPassword && !signedInUsernames.includes(newUsername)) {
+            database.ref('/userdata').push({
+                username: newUsername,
+                password: newPassword
+            });
+            database.ref('/gamechannel/'+newUsername).set({
+                online: false,
+                searching: false,
+                totalCount: 0,
+                winCount: 0,
+                lostCount: 0
+            });
+            createnewAccountDiv.style.display = "none";
+            signInDiv.style.display = "block";
+            signInInvalidText.textContent = 'Already registered. Sign in now!';
+        } else if(signedInUsernames.includes(newUsername)){
+            newAccInvalidText.textContent = 'The username is not available.';
+            newAccInvalidText.style.color = 'red';
+        } else {
+            newAccInvalidText.textContent = 'The passwords are not the same. Please type again.';
+            newAccInvalidText.style.color = 'red';
+        }
+    },2000)
+    
 }
 
 function signInValidation() {
@@ -77,10 +95,19 @@ function signInValidation() {
     database.ref('/userdata').on("child_added", (snapshot) => {
         if(signInUsername === snapshot.val().username) {
             if(passwordInput.value === snapshot.val().password) {
+                currentWinCount = 0;
+                currentDrawCount = 0;
+                currentLostCount = 0;
                 username = signInUsername;
                 online = true;
                 usernameInput.value = '';
                 passwordInput.value = '';
+                if(usernameInput.value !== snapshot.val().username) {
+                    winCount = 0;
+                    drawCount = 0;
+                    lostCount = 0;
+                    totalCount = 0;
+                }
                 database.ref('/gamechannel/'+username).on("value", function(snapshot) {
                     if(snapshot.val().hasOwnProperty("drawCount")) {
                         winCount = snapshot.val().winCount;
@@ -88,9 +115,15 @@ function signInValidation() {
                         lostCount = snapshot.val().lostCount;
                         totalCount = snapshot.val().totalCount;
                     }
-                    document.getElementById('player1-win-percentage').textContent = (winCount / totalCount * 100).toFixed(2) + "%";
-                    document.getElementById('player1-draw-percentage').textContent = (drawCount / totalCount * 100).toFixed(2) + "%";
-                    document.getElementById('player1-lost-percentage').textContent = (lostCount / totalCount * 100).toFixed(2) + "%";
+                    if(totalCount === 0){
+                        document.getElementById('player1-win-percentage').textContent = "0%";
+                        document.getElementById('player1-draw-percentage').textContent = "0%";
+                        document.getElementById('player1-lost-percentage').textContent = "0%";    
+                    } else {
+                        document.getElementById('player1-win-percentage').textContent = (winCount / totalCount * 100).toFixed(2) + "%";
+                        document.getElementById('player1-draw-percentage').textContent = (drawCount / totalCount * 100).toFixed(2) + "%";
+                        document.getElementById('player1-lost-percentage').textContent = (lostCount / totalCount * 100).toFixed(2) + "%";    
+                    };
                 });
                 document.querySelectorAll('.sign-in').forEach(element => element.style.display = "none");
                 setTimeout(function() {
@@ -138,7 +171,7 @@ function logOut() {
     newAccInvalidText.textContent = '';
     online = false;
     searching = false;
-    console.log(username, password);
+    onlinePlayers = [];
     database.ref('/gamechannel/'+username).set({
         searching,
         online,
@@ -148,7 +181,8 @@ function logOut() {
         drawCount
     });
     document.querySelectorAll('.sign-in').forEach(element => element.style.display = "block");
-    document.querySelectorAll('.result').forEach(element => element.style.display = "none");
+    document.querySelectorAll('.result-container').forEach(element => element.style.display = "none");
+    document.querySelectorAll('.search-btn').forEach(element => element.style.display = "none");
     document.querySelectorAll('.user-container').forEach(element => element.style.display = "none");
 };
 
@@ -163,8 +197,10 @@ function searchingOtherPlayer(username) {
         drawCount
     });
     player1name.textContent = username;
-    document.querySelectorAll('.result').forEach(element => element.style.display = "block");
-
+    document.querySelectorAll('.result-container').forEach(element => element.style.display = "flex");
+    currentWinData.textContent = currentWinCount;
+    currentDrawData.textContent = currentDrawCount;
+    currentLostData.textContent = currentLostCount;
 }
 
 function findingUser2(onlinePlayers) {
@@ -194,9 +230,11 @@ function findingUser2(onlinePlayers) {
 function resultFunc(result) {
     switch(result) {
         case 'win':
-            document.getElementById('result').textContent = 'You Win';
+            document.getElementById('result').textContent = 'You Win!!!';
+            document.getElementById('result').style.color = 'rgb(20, 44, 25)';
             winCount++;
             totalCount++;
+            currentWinCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching,
@@ -207,9 +245,11 @@ function resultFunc(result) {
             });
             break;
         case 'draw':
-            document.getElementById('result').textContent = 'You draw';
+            document.getElementById('result').textContent = 'It is a draw!!!';
+            document.getElementById('result').style.color = 'rgb(26, 48, 54)';
             drawCount++;
             totalCount++;
+            currentDrawCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching,
@@ -220,9 +260,11 @@ function resultFunc(result) {
             });
             break;
         case 'lost':
-            document.getElementById('result').textContent = 'You Lost';
+            document.getElementById('result').textContent = 'You Lost!!!';
+            document.getElementById('result').style.color = 'rgb(59, 31, 31)';
             lostCount++;
             totalCount++;
+            currentLostCount++;
             database.ref('/gamechannel/'+username).set({
                 online,
                 searching,
@@ -233,6 +275,10 @@ function resultFunc(result) {
             });
             break;                        
     }
+
+    currentWinData.textContent = currentWinCount;
+    currentDrawData.textContent = currentDrawCount;
+    currentLostData.textContent = currentLostCount;
 
     setTimeout(function() {
         document.getElementById('result').textContent = '';
@@ -247,8 +293,6 @@ function resultFunc(result) {
     });
         pick1H4.textContent = '';
         pick2H4.textContent = '';
-        pick1H4.style.display = "none";
-        pick2H4.style.display = "none";
         document.querySelectorAll('.selection').forEach(x => x.style.display = 'flex');
     },5000);
 }
