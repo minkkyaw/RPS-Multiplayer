@@ -37,6 +37,8 @@ let totalCount = 0;
 let currentWinCount = 0;
 let currentDrawCount = 0;
 let currentLostCount = 0;
+let pick1;
+let pick2;
 
 
 // Your web app's Firebase configuration
@@ -150,6 +152,7 @@ function signInValidation() {
                     lostCount,
                     drawCount
                 });
+                pick2 = '';
                 pick1H4.textContent = this.id;
                 pick1H4.style.display = "block";
                 document.querySelectorAll('.selection').forEach(x => x.style.display = 'none');
@@ -172,6 +175,9 @@ function logOut() {
     online = false;
     searching = false;
     onlinePlayers = [];
+    currentWinCount = 0;
+    currentDrawCount = 0;
+    currentLostCount = 0;
     database.ref('/gamechannel/'+username).set({
         searching,
         online,
@@ -217,6 +223,11 @@ function findingUser2(onlinePlayers) {
             lostCount,
             drawCount
         });
+        database.ref('/gamechannel/'+user2name).once("value", function(snapshot) {
+            if(!snapshot.val().online) {
+                player2name.textContent = 'Player-2 logged out';
+            };
+        })
     } else {
         player2name.textContent = 'Waiting for other players';
     }
@@ -299,14 +310,14 @@ function resultFunc(result) {
 
 database.ref('/gamechannel/').on("value", (snapshot) => {
     if(user2name && snapshot.val()[user2name].hasOwnProperty("pick") && snapshot.val()[username].hasOwnProperty("pick")){
-        let pick1 = snapshot.val()[username].pick;
-        let pick2 = snapshot.val()[user2name].pick;
+        pick1 = snapshot.val()[username].pick;
+        pick2 = snapshot.val()[user2name].pick;
         if(pick1 && pick2) {
             pick2H4.textContent = pick2;
             pick2H4.style.display = "block";
-        }
-        
-        if(pick1 === 'rock') {
+            if(pick1 === 'rock') {
+            console.log(1);
+            console.log("pick2  " + pick2)
             switch(pick2) {
                 case 'rock':
                     resultFunc('draw');
@@ -319,6 +330,7 @@ database.ref('/gamechannel/').on("value", (snapshot) => {
                     break;
             }
         } else if(pick1 === 'paper') {
+            console.log(1);
             switch(pick2) {
                 case 'rock':
                     resultFunc('win');
@@ -331,6 +343,7 @@ database.ref('/gamechannel/').on("value", (snapshot) => {
                     break;
             }
         } else if(pick1 === 'scissors') {
+            console.log(1);
             switch(pick2) {
                 case 'rock':
                     resultFunc('lost');
@@ -343,6 +356,9 @@ database.ref('/gamechannel/').on("value", (snapshot) => {
                     break;
             }
         }
+    }
+        
+        
     }
     
 });
@@ -371,6 +387,7 @@ createNewAccountLink.addEventListener('click', function(e) {
 });
 
 searchBtn.addEventListener('click',() => {
+    this.blur();
     searchingOtherPlayer(username);
     database.ref('/gamechannel/').on("value", (snapshot) => {
         for(var key in snapshot.val()) {
@@ -382,6 +399,7 @@ searchBtn.addEventListener('click',() => {
             };
         } ;
     });
+    searchBtn.style.display = 'none';
 });
 
 logOutBtn.addEventListener('click',function() {

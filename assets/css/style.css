@@ -5,6 +5,7 @@
 }
 
 body {
+    font-family: 'Poppins', sans-serif;
     width: 100%;
     font-size: 16px;
     line-height: 1.5;
@@ -22,8 +23,9 @@ a {
 .header {
     display: flex;
     justify-items: flex-end;
-    padding: 10px;
-    border-bottom: 1px solid red;
+    padding: 20px;
+    border-bottom: 1px solid rgb(95, 83, 83);
+    margin-bottom: 20px;
 }
 
 .header h1 {
@@ -37,12 +39,16 @@ a {
 }
 
 .sign-in {
-    width: 300px;
+    width: 340px;
     margin: 0 auto;
 }
 
+.sign-in a {
+    text-decoration: underline;
+}
+
 .height-20 {
-    height: 20px;
+    min-height: 20px;
 }
 
 .form-input {
@@ -63,6 +69,10 @@ a {
     display: none;
     width: 350px;
     margin: 0 auto;
+}
+
+.create-new-acc a {
+    text-decoration: underline;
 }
 
 #search-btn {
@@ -158,6 +168,10 @@ a {
     border-bottom: 1px solid rgb(53, 34, 34);
 }
 
+#result {
+    height: 78px;
+}
+
 .player2-container {
     width: 230px;
     height: 200px;
@@ -201,6 +215,17 @@ a {
     padding: 5px 10px;
     background: #fff;
     border-radius: 5px;
+    transition: background-color .3s ease-in;
+}
+
+.btn:hover {
+    background-color: rgb(255, 244, 244);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(161, 160, 160);
+    transform: scale(1.1);
 }
 
 .search-btn {
@@ -210,4 +235,223 @@ a {
     background: #fff;
     border-radius: 5px;
     margin: 20px auto;
+    transition: background-color .3s ease-in;
 }
+
+.search-btn:hover {
+    background-color: rgb(255, 244, 244);
+}
+
+.search-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(161, 160, 160);
+    transform: scale(1.1);
+}
+
+.log-out-btn {
+    font-size: inherit;
+    font-family: inherit;
+    padding: 5px 10px;
+    background: #fff;
+    border-radius: 5px;
+    margin: 20px auto;
+    border: 1px solid #666;
+    transition: background-color .3s ease-in;
+}
+
+.log-out-btn:hover {
+    background-color: rgb(255, 244, 244);
+}
+
+.log-out-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(161, 160, 160);
+    transform: scale(1.1);
+}
+
+.log-out-postion {
+    margin: 10px 0;
+}
+
+@media screen and (max-width: 890px) {
+    .header {
+        display: flex;
+        justify-items: flex-end;
+        padding: 20px;
+        border-bottom: 1px solid rgb(95, 83, 83);
+        margin-bottom: 20px;
+    }
+    
+    .header h1 {
+        width: 90%;
+        text-align: center;
+    }
+    
+    .header div {
+        width: 20%;
+        text-align: right;
+    }
+    
+    .form-input {
+        font-size: 1rem;
+        padding: 5px;
+        border-radius: 5px;
+        border: none;
+        border: 1px solid rgb(129, 129, 129);
+        margin: 10px;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(129, 129, 129, 0.7)
+    }
+    
+    .create-new-acc {
+        display: none;
+        width: 350px;
+        margin: 0 auto;
+    }
+    
+    .create-new-acc a {
+        text-decoration: underline;
+    }
+    
+    #search-btn {
+        display: none;
+    }
+    
+    .container {
+        display: flex;
+    }
+    
+    .user-container {
+        display: none;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .result-container {
+        display: none;
+        width: 320px;
+        text-align: center;
+        margin: 0 auto;
+        padding: 20px 0;
+        flex-direction: column;
+    }
+    
+    .player1-container {
+        width: 320px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .result {
+        display: block;
+        width: 320px;
+        border: 1px solid rgb(53, 34, 34);
+        margin: 0 auto;
+    }
+    
+    .player2-container {
+        width: 320px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .log-out-btn {
+        font-size: inherit;
+        font-family: inherit;
+        padding: 5px 10px;
+        background: #fff;
+        border-radius: 5px;
+        margin: 20px auto;
+        border: 1px solid #666;
+        transition: background-color .3s ease-in;
+    }
+
+    .log-out-postion {
+        margin: 10px 0;
+    }
+    
+}
+
+@media screen and (max-width: 640px) {
+    .header {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .header h1 {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .header div {
+        width: 100%;
+        text-align: center;
+    }
+
+    .create-new-acc a {
+        text-decoration: underline;
+    }
+    
+    #search-btn {
+        display: none;
+    }
+    
+    .container {
+        display: flex;
+    }
+    
+    .user-container {
+        display: none;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .result-container {
+        flex-direction: column;
+    }
+    
+    .player1-container {
+        width: 320px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .result {
+        display: block;
+        width: 320px;
+        border: 1px solid rgb(53, 34, 34);
+        margin: 0 auto;
+    }
+    
+    .player2-container {
+        width: 320px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .log-out-btn {
+        font-size: inherit;
+        font-family: inherit;
+        padding: 5px 10px;
+        background: #fff;
+        border-radius: 5px;
+        margin: 20px auto;
+        border: 1px solid #666;
+        transition: background-color .3s ease-in;
+    }
+
+    .log-out-postion {
+        margin: 10px 0;
+    }
+    
+}
+
